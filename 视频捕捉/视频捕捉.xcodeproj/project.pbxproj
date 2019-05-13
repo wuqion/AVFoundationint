@@ -8,24 +8,30 @@
 
 /* Begin PBXBuildFile section */
 		219188FF228915D10080B8B8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 219188FE228915D10080B8B8 /* AppDelegate.m */; };
-		21918902228915D10080B8B8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 21918901228915D10080B8B8 /* ViewController.m */; };
+		21918902228915D10080B8B8 /* VideoDataOutputVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 21918901228915D10080B8B8 /* VideoDataOutputVC.m */; };
 		21918905228915D10080B8B8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21918903228915D10080B8B8 /* Main.storyboard */; };
 		21918907228915DA0080B8B8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 21918906228915DA0080B8B8 /* Assets.xcassets */; };
 		2191890A228915DA0080B8B8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21918908228915DA0080B8B8 /* LaunchScreen.storyboard */; };
 		2191890D228915DA0080B8B8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2191890C228915DA0080B8B8 /* main.m */; };
+		21918919228959340080B8B8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 21918918228959330080B8B8 /* ViewController.m */; };
+		2191891C22895C1F0080B8B8 /* faceVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2191891B22895C1F0080B8B8 /* faceVC.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		219188FA228915D10080B8B8 /* 视频捕捉.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "视频捕捉.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		219188FD228915D10080B8B8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		219188FE228915D10080B8B8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		21918900228915D10080B8B8 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		21918901228915D10080B8B8 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		21918900228915D10080B8B8 /* VideoDataOutputVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoDataOutputVC.h; sourceTree = "<group>"; };
+		21918901228915D10080B8B8 /* VideoDataOutputVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoDataOutputVC.m; sourceTree = "<group>"; };
 		21918904228915D10080B8B8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		21918906228915DA0080B8B8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		21918909228915DA0080B8B8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2191890B228915DA0080B8B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2191890C228915DA0080B8B8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		21918917228959330080B8B8 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		21918918228959330080B8B8 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		2191891A22895C1F0080B8B8 /* faceVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = faceVC.h; sourceTree = "<group>"; };
+		2191891B22895C1F0080B8B8 /* faceVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = faceVC.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +66,12 @@
 			children = (
 				219188FD228915D10080B8B8 /* AppDelegate.h */,
 				219188FE228915D10080B8B8 /* AppDelegate.m */,
-				21918900228915D10080B8B8 /* ViewController.h */,
-				21918901228915D10080B8B8 /* ViewController.m */,
+				21918917228959330080B8B8 /* ViewController.h */,
+				21918918228959330080B8B8 /* ViewController.m */,
+				2191891A22895C1F0080B8B8 /* faceVC.h */,
+				2191891B22895C1F0080B8B8 /* faceVC.m */,
+				21918900228915D10080B8B8 /* VideoDataOutputVC.h */,
+				21918901228915D10080B8B8 /* VideoDataOutputVC.m */,
 				21918903228915D10080B8B8 /* Main.storyboard */,
 				21918906228915DA0080B8B8 /* Assets.xcassets */,
 				21918908228915DA0080B8B8 /* LaunchScreen.storyboard */,
@@ -141,8 +151,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21918902228915D10080B8B8 /* ViewController.m in Sources */,
+				21918902228915D10080B8B8 /* VideoDataOutputVC.m in Sources */,
 				2191890D228915DA0080B8B8 /* main.m in Sources */,
+				2191891C22895C1F0080B8B8 /* faceVC.m in Sources */,
+				21918919228959340080B8B8 /* ViewController.m in Sources */,
 				219188FF228915D10080B8B8 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

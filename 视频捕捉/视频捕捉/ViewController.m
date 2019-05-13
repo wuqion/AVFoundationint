@@ -1,195 +1,85 @@
+
 //
 //  ViewController.m
 //  视频捕捉
 //
-//  Created by 联创—王增辉 on 2019/5/13.
+//  Created by 吴琼 on 2019/1/8.
 //  Copyright © 2019年 lcWorld. All rights reserved.
 //
+#define ScreenWidth [UIScreen mainScreen].bounds.size.width
+#define ScreenHeight [UIScreen mainScreen].bounds.size.height
+#define TabBar_Height 49.0
+#define Nav_StatusBar_Height [UIApplication sharedApplication].statusBarFrame.size.height
+#define SEPARATELINE_COLOR [UIColor redColor]
 
 #import "ViewController.h"
-#import <AVFoundation/AVFoundation.h>
-@interface ViewController ()<AVCaptureVideoDataOutputSampleBufferDelegate>
+#import "VideoDataOutputVC.h"//视频捕获
+#import "faceVC.h"//人脸识别
 
-@property (strong, nonatomic) AVCaptureDeviceInput * DeviceInput;//摄像头
-@property (strong, nonatomic) AVCaptureSession     * session;
-@property (strong, nonatomic) AVCaptureVideoDataOutput    * VideoDataOutput;//捕获视频中的帧
-@property (strong, nonatomic) AVCaptureVideoPreviewLayer    * PreviewLayer;//视频预览图层
+@interface ViewController ()<UITableViewDataSource, UITableViewDelegate>
+
+@property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) NSMutableArray *soures;
+
 
 @end
 
 @implementation ViewController
-{
-    dispatch_queue_t videoDataOutputQueue;
-}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.soures addObject:@{@"title":@"视频捕捉",@"class":@"VideoDataOutputVC"}];
+    [self.soures addObject:@{@"title":@"人脸识别",@"class":@"faceVC"}];
+    [self addUI];
+    [self setViewFrame];
+    self.view.backgroundColor = [UIColor whiteColor];
+}
 
+- (void)addUI{
+    [self.view addSubview:self.tableView];
 }
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    //获取摄像头授权
-    [self captureAuthorization:(AVMediaTypeVideo) callStatus:^(BOOL status) {
-        if (status) {
-//            [self showAlertWithContent:@"s已授权"];
-            //获取设备
-            [self createSession];
-            if (!self->_session) {
-                [self showAlertWithContent:@"session初始化失败"];
-            }
-           
-            //获取设备
-            if (![self getCameraDevice]) {
-                [self showAlertWithContent:@"获取设备失败"];
-            }
-            //加人session
-            if (![self addCaptureDeviceToSession]) {
-                [self showAlertWithContent:@"Device加入sessions失败"];
-            }
-            //创建输出
-            if (![self setVideoOutput]) {
-                [self showAlertWithContent:@"创建输出失败"];
-            }
-            //加人session
-            if (![self addVideoOutputToSession]) {
-                [self showAlertWithContent:@"VideoOutput加入sessions失败"];
-            }
-            //加入预览图层
-            [self addPreviewLayer];
-
-            [self->_session startRunning];
-
-        }else{
-            [self showAlertWithContent: @"未授权"];
-        }
-    }];
-}
-#pragma mark - 步骤七
-//加入预览图层
-- (void)addPreviewLayer
-{
-    self.PreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self->_session];
-    self.PreviewLayer.frame = self.view.bounds;
-    [self.view.layer addSublayer:self.PreviewLayer];
-}
-#pragma mark - 步骤六
-//添加输出
-- (BOOL)addVideoOutputToSession
-{
-    if ([_session canAddOutput:_VideoDataOutput]) {
-        [_session addOutput:_VideoDataOutput];
-        return YES;
-    }
-    return NO;
-}
-#pragma mark - 步骤五
-//创建输出
-- (BOOL)setVideoOutput
-{
-    _VideoDataOutput = [[AVCaptureVideoDataOutput alloc]init];
-    NSDictionary * newSettings = @{(NSString *)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_32BGRA)};
-    _VideoDataOutput.videoSettings = newSettings;
-    
-    //如果数据输出队列被阻止则丢弃（因为我们处理静止图像
-    [_VideoDataOutput setAlwaysDiscardsLateVideoFrames:YES];
-    
-    //创建用于样本缓冲区委托的串行调度队列以及捕获静态图像的时间
-    //必须使用串行调度队列来保证视频帧按顺序传送
-    //有关详细信息，请参阅setSampleBufferDelegate：queue的标头文档
-    videoDataOutputQueue = dispatch_queue_create("videoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
-    [_VideoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
-    return _VideoDataOutput !=nil;
-}
-#pragma mark - 步骤四
-//添加输入设备
-- (BOOL)addCaptureDeviceToSession
-{
-    if ([_session canAddInput:_DeviceInput]) {
-        [_session addInput:_DeviceInput];
-        return YES;
-    }
-    return NO;
-}
-#pragma mark - 步骤三
-//获取设备
-- (BOOL)getCameraDevice
-{
-    AVCaptureDevice * device = [AVCaptureDevice defaultDeviceWithDeviceType:( AVCaptureDeviceTypeBuiltInWideAngleCamera) mediaType:( AVMediaTypeVideo) position:(AVCaptureDevicePositionFront)];
-    if (device == nil) {
-        return NO;
-    }
-    _DeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:nil];
-    if (_DeviceInput == nil) {
-        return NO;
-    }
-    return YES;
-}
-#pragma mark - 步骤二
-//创建session
-- (void)createSession{
-    _session = [[AVCaptureSession alloc]init];
-    if ([_session canSetSessionPreset:(AVCaptureSessionPreset640x480)]) {
-        [_session setSessionPreset:AVCaptureSessionPreset640x480];
-    }
-}
-#pragma mark - 步骤一
-//获取授权
-- (void)captureAuthorization:(AVMediaType )type callStatus:(void(^)(BOOL status))callStatus
-{
-    AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:type];
-    switch (status) {
-        case AVAuthorizationStatusNotDetermined://不确定
-        {
-            [AVCaptureDevice requestAccessForMediaType:type completionHandler:^(BOOL granted) {
-                if (callStatus) {
-                    callStatus(granted);
-                }
-            }];
-        }
-            break;
-        case AVAuthorizationStatusRestricted://未授权，且用户无法更新，如家长控制情况下
-        {
-            callStatus(NO);
-        }
-            break;
-        case AVAuthorizationStatusDenied://否认
-        {
-            callStatus(NO);
-        }
-            break;
-        case AVAuthorizationStatusAuthorized://授权
-        {
-            callStatus(YES);
-        }
-            break;
-            
-        default:
-            break;
-    }
-}
-#pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate
-#pragma mark -
-#pragma mark 输出新的视频帧时调用
-//每当AVCaptureVideoDataOutput实例输出新的视频帧时调用。
-- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
-{
-    static int i = 0;
-    NSLog(@"%d",i++);
-}
-- (void)captureOutput:(AVCaptureOutput *)output didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
+- (void)setViewFrame
 {
     
 }
-//提示
-- (void)showAlertWithContent:(NSString *)content
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    UIAlertController * alertVC = [UIAlertController alertControllerWithTitle:@"" message:content preferredStyle:(UIAlertControllerStyleAlert)];
-    UIAlertAction * action = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleCancel) handler:^(UIAlertAction * _Nonnull action) {
-        
-    }];
-    [alertVC addAction:action];
-    [self presentViewController:alertVC animated:YES completion:nil];
+    return self.soures.count;
 }
-
+- (UITableViewCell * )tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    if (!cell) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+    }
+    cell.textLabel.text = self.soures[indexPath.row][@"title"];
+    return cell;
+}
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NSString * class = self.soures[indexPath.row][@"class"];
+    UIViewController * vc = [[NSClassFromString(class) alloc]init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+- (UITableView *)tableView{
+    if (!_tableView) {
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, Nav_StatusBar_Height, ScreenWidth, ScreenHeight - Nav_StatusBar_Height - TabBar_Height) style:UITableViewStylePlain];
+        _tableView.separatorColor = SEPARATELINE_COLOR;
+        _tableView.separatorInset = UIEdgeInsetsMake(0, 18, 0, 18);
+        _tableView.backgroundColor = self.view.backgroundColor;
+        _tableView.dataSource = self;
+        _tableView.delegate = self;
+        _tableView.tableFooterView = [UIView new];
+    }
+    return _tableView;
+}
+- (NSMutableArray *)soures
+{
+    if (!_soures) {
+        _soures = [NSMutableArray new];
+    }
+    return _soures;
+}
 
 @end
+
