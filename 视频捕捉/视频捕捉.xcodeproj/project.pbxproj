@@ -15,6 +15,8 @@
 		2191890D228915DA0080B8B8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2191890C228915DA0080B8B8 /* main.m */; };
 		21918919228959340080B8B8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 21918918228959330080B8B8 /* ViewController.m */; };
 		2191891C22895C1F0080B8B8 /* faceVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2191891B22895C1F0080B8B8 /* faceVC.m */; };
+		2191891E2289761B0080B8B8 /* 1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2191891D2289761A0080B8B8 /* 1.jpg */; };
+		21BFAADF228A8B24001907EA /* PushFlowVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BFAADE228A8B24001907EA /* PushFlowVC.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,9 @@
 		21918918228959330080B8B8 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		2191891A22895C1F0080B8B8 /* faceVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = faceVC.h; sourceTree = "<group>"; };
 		2191891B22895C1F0080B8B8 /* faceVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = faceVC.m; sourceTree = "<group>"; };
+		2191891D2289761A0080B8B8 /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 1.jpg; sourceTree = "<group>"; };
+		21BFAADD228A8B24001907EA /* PushFlowVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PushFlowVC.h; sourceTree = "<group>"; };
+		21BFAADE228A8B24001907EA /* PushFlowVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PushFlowVC.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +77,9 @@
 				2191891B22895C1F0080B8B8 /* faceVC.m */,
 				21918900228915D10080B8B8 /* VideoDataOutputVC.h */,
 				21918901228915D10080B8B8 /* VideoDataOutputVC.m */,
+				21BFAADD228A8B24001907EA /* PushFlowVC.h */,
+				21BFAADE228A8B24001907EA /* PushFlowVC.m */,
+				2191891D2289761A0080B8B8 /* 1.jpg */,
 				21918903228915D10080B8B8 /* Main.storyboard */,
 				21918906228915DA0080B8B8 /* Assets.xcassets */,
 				21918908228915DA0080B8B8 /* LaunchScreen.storyboard */,
@@ -141,6 +149,7 @@
 				2191890A228915DA0080B8B8 /* LaunchScreen.storyboard in Resources */,
 				21918907228915DA0080B8B8 /* Assets.xcassets in Resources */,
 				21918905228915D10080B8B8 /* Main.storyboard in Resources */,
+				2191891E2289761B0080B8B8 /* 1.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,6 +162,7 @@
 			files = (
 				21918902228915D10080B8B8 /* VideoDataOutputVC.m in Sources */,
 				2191890D228915DA0080B8B8 /* main.m in Sources */,
+				21BFAADF228A8B24001907EA /* PushFlowVC.m in Sources */,
 				2191891C22895C1F0080B8B8 /* faceVC.m in Sources */,
 				21918919228959340080B8B8 /* ViewController.m in Sources */,
 				219188FF228915D10080B8B8 /* AppDelegate.m in Sources */,

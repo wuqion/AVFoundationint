@@ -1,8 +1,8 @@
 //
-//  faceVC.h
+//  PushFlowVC.h
 //  视频捕捉
 //
-//  Created by 联创—王增辉 on 2019/5/13.
+//  Created by 联创—王增辉 on 2019/5/14.
 //  Copyright © 2019年 lcWorld. All rights reserved.
 //
 
@@ -10,9 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface faceVC : UIViewController
-
-- (instancetype)init NS_UNAVAILABLE;
+@interface PushFlowVC : UIViewController
 
 @end
 

@@ -1,31 +1,28 @@
 //
-//  faceVC.m
+//  PushFlowVC.m
 //  视频捕捉
 //
-//  Created by 联创—王增辉 on 2019/5/13.
+//  Created by 联创—王增辉 on 2019/5/14.
 //  Copyright © 2019年 lcWorld. All rights reserved.
 //
 
-#import "faceVC.h"
+#import "PushFlowVC.h"
 #import <AVFoundation/AVFoundation.h>
-@interface faceVC ()<AVCaptureMetadataOutputObjectsDelegate>
+@interface PushFlowVC ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property (strong, nonatomic) AVCaptureDeviceInput * DeviceInput;//摄像头
 @property (strong, nonatomic) AVCaptureSession     * session;
-@property (strong, nonatomic) AVCaptureMetadataOutput       * metadataOutput;//捕获视频中的帧
+@property (strong, nonatomic) AVCaptureVideoDataOutput    * VideoDataOutput;//捕获视频中的帧
 @property (strong, nonatomic) AVCaptureVideoPreviewLayer    * PreviewLayer;//视频预览图层
-@property (strong, nonatomic) UILabel               * laber;//
-@property (strong, nonatomic) CALayer               * boxLayer;//识别位置
 
 @end
 
-@implementation faceVC
+@implementation PushFlowVC
 {
-    dispatch_queue_t metadataOutputQueue;
+    dispatch_queue_t videoDataOutputQueue;
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-
     
 }
 - (void)viewDidAppear:(BOOL)animated
@@ -57,25 +54,11 @@
             if (![self addVideoOutputToSession]) {
                 [self showAlertWithContent:@"VideoOutput加入sessions失败"];
             }
-            if (![self setFace]) {
-                [self showAlertWithContent:@"不支持人脸识别"];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self.navigationController popViewControllerAnimated:YES];
-                });
-            }
             //加入预览图层
             [self addPreviewLayer];
             
             [self->_session startRunning];
             
-            self.boxLayer = [[CALayer alloc]init];
-            self.boxLayer.borderColor = [UIColor yellowColor].CGColor;
-            self.boxLayer.borderWidth = 1;
-            [self.view.layer addSublayer:self.boxLayer];
-            self.boxLayer.contents = (__bridge id _Nullable)([UIImage imageNamed:@"1.jpg"].CGImage);
-            self.laber = [[UILabel alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height - 80, 1000, 80)];
-            self.laber.textColor = [UIColor blackColor];
-            [self.view addSubview:self.laber];
         }else{
             [self showAlertWithContent: @"未授权"];
         }
@@ -85,17 +68,6 @@
 {
     [super viewDidDisappear:animated];
     [_session stopRunning];
-}
-#pragma mark - 步骤八
-//设置人脸识别
-- (BOOL) setFace
-{
-    if ([_metadataOutput.availableMetadataObjectTypes containsObject:AVMetadataObjectTypeFace]) {
-        [_metadataOutput setMetadataObjectTypes:@[AVMetadataObjectTypeFace]];
-        return YES;
-    }
-    return NO;
-    
 }
 #pragma mark - 步骤七
 //加入预览图层
@@ -109,8 +81,8 @@
 //添加输出
 - (BOOL)addVideoOutputToSession
 {
-    if ([_session canAddOutput:_metadataOutput]) {
-        [_session addOutput:_metadataOutput];
+    if ([_session canAddOutput:_VideoDataOutput]) {
+        [_session addOutput:_VideoDataOutput];
         return YES;
     }
     return NO;
@@ -119,13 +91,19 @@
 //创建输出
 - (BOOL)setVideoOutput
 {
-    _metadataOutput = [[AVCaptureMetadataOutput alloc]init];
+    _VideoDataOutput = [[AVCaptureVideoDataOutput alloc]init];
+    NSDictionary * newSettings = @{(NSString *)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)};
+    _VideoDataOutput.videoSettings = newSettings;
     
-
+    //如果数据输出队列被阻止则丢弃（因为我们处理静止图像
+    [_VideoDataOutput setAlwaysDiscardsLateVideoFrames:YES];
     
-    metadataOutputQueue = dispatch_queue_create("videoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
-    [_metadataOutput setMetadataObjectsDelegate:self queue:metadataOutputQueue];
-    return _metadataOutput !=nil;
+    //创建用于样本缓冲区委托的串行调度队列以及捕获静态图像的时间
+    //必须使用串行调度队列来保证视频帧按顺序传送
+    //有关详细信息，请参阅setSampleBufferDelegate：queue的标头文档
+    videoDataOutputQueue = dispatch_queue_create("videoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
+    [_VideoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
+    return _VideoDataOutput !=nil;
 }
 #pragma mark - 步骤四
 //添加输入设备
@@ -158,7 +136,6 @@
     if ([_session canSetSessionPreset:(AVCaptureSessionPreset640x480)]) {
         [_session setSessionPreset:AVCaptureSessionPreset640x480];
     }
-    
 }
 #pragma mark - 步骤一
 //获取授权
@@ -198,53 +175,16 @@
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate
 #pragma mark -
 #pragma mark 输出新的视频帧时调用
-//每当AVCaptureMetadataOutput实例通过连接发出新对象时调用。
-- (void)captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection;
+//每当AVCaptureVideoDataOutput实例输出新的视频帧时调用。
+- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
-//    static int i = 0;
-//    NSLog(@"%d",i++);
-    for (AVMetadataFaceObject * objc in metadataObjects) {
-        
-        dispatch_async( dispatch_get_main_queue(), ^{
-            AVMetadataFaceObject * face = [self.PreviewLayer transformedMetadataObjectForMetadataObject:objc];
-            self.boxLayer.frame = face.bounds;
-            self.boxLayer.transform = CATransform3DIdentity;
-            if(face.hasYawAngle){
-                self.boxLayer.transform = CATransform3DConcat(self.boxLayer.transform, [self transformFromYawAngle:face.yawAngle * M_PI/180]);
-            }
-            if (face.hasRollAngle) {
-                self.boxLayer.transform =CATransform3DMakeRotation(face.rollAngle * M_PI /180, 0.0f, 0.0f, 1.0f);
-            }
-            NSLog(@"%lf",face.rollAngle);
-            self.laber.text = [NSString stringWithFormat:@"%lf-%lf-",face.rollAngle * M_PI/180,face.yawAngle * M_PI/180];
-        });
-    }
+    static int i = 0;
+    NSLog(@"%d",i++);
 }
--(CATransform3D)transformFromYawAngle:(CGFloat)angle
+- (void)captureOutput:(AVCaptureOutput *)output didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
-    CATransform3D t = CATransform3DMakeRotation(angle * M_PI/180, 0.0f, -1.0f, 0.0f);
-    return CATransform3DConcat(t, [self orientationTransform]);
+    
 }
--(CATransform3D)orientationTransform
-{
-    CGFloat angle  = 0.0f;
-    switch ([UIDevice currentDevice].orientation) {
-        case UIDeviceOrientationPortraitUpsideDown:
-            angle = M_PI;
-            break;
-        case UIDeviceOrientationLandscapeRight:
-            angle = -M_PI/2.0;
-            break;
-        case UIDeviceOrientationLandscapeLeft:
-            angle = M_PI/2.0;
-            break;
-        default:
-            angle  = 0.0f;
-            break;
-    }
-    return CATransform3DMakeRotation(angle, 0.0f, 0.0f, 1.0f);
-}
-
 //提示
 - (void)showAlertWithContent:(NSString *)content
 {
